@@ -8,7 +8,7 @@ export const useUpdate = (ruta) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${Url + ruta}/${id}/`, {
+      const response = await fetch(`${Url + ruta}/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

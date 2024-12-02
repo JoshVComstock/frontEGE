@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Url } from "../../config";
+import { data } from "../../data/usuario";
 import {
   Button,
   Container,
@@ -14,41 +15,36 @@ import {
   Subtitle,
   Title,
 } from "../../style/loginStyled";
+import { UserContext } from "../../context/useContext";
 const Login = () => {
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
+  const { loginUser } = useContext(UserContext);
+  const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const response = await fetch(`${Url}login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          usuario: usuario,
-          password: password,
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error("Credenciales inválidas. Inténtalo de nuevo.");
-      }
+    const foundUser = data.usuarios.find(
+      (user) => user.usuario === usuario && user.password === password
+    );
 
-      const data = await response.json();
-      toast.success(data.message);
-      console.log(data);
-      navigate("/usuarios");
-    } catch (err) {
-      console.error(err);
+    if (foundUser) {
+      loginUser(foundUser);
+      toast.success("Inicio de sesión exitoso");
+      navigate(
+        foundUser.rol == "secretaria"
+          ? "/inicio"
+          : foundUser.rol == "padre"
+          ? "/inicio-padre"
+          : "/inicio-docente"
+      );
+    } else {
       toast.error("Credenciales inválidas. Inténtalo de nuevo.");
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   return (

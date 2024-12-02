@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
@@ -11,13 +11,15 @@ import {
   ClipboardList,
   BookOpen,
 } from "lucide-react";
-
+import { UserContext } from "../../context/useContext";
 const Nav = () => {
-  const userRole = "secretaria";
+  const { user } = useContext(UserContext);
+
+  const userRole = user.rol;
   const location = useLocation();
 
-  const getNavLinks = (role) => {
-    switch (role) {
+  const getNavLinks = (userRole) => {
+    switch (userRole) {
       case "secretaria":
         return [
           { to: "/inicio", icon: <Home size={24} />, text: "Inicio" },

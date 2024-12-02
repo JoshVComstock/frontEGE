@@ -42,6 +42,7 @@ import { formatFecha } from "../../../utils/formatDate";
 import { usePost } from "../../../hook/usePost";
 import { useUpdate } from "../../../hook/usePut";
 import { useDelete } from "../../../hook/useDelete";
+import { profesoresData } from "../../../data/profesores";
 const Profesores = () => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -192,7 +193,7 @@ const Profesores = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredItems?.map((item) => (
+            {profesoresData?.map((item) => (
               <tr key={item.id}>
                 <Td>{item.id}</Td>
                 <Td>{item.nombre}</Td>

@@ -38,7 +38,7 @@ app.put("/padre/:id", async (req, res) => {
   try {
     const padre = await prisma.padre.update({
       where: {
-        ci: Number(req.params.id),
+        id: Number(req.params.id),
       },
       data: req.body,
     });
@@ -57,7 +57,7 @@ app.delete("/padre/:id", async (req, res) => {
   try {
     const padre = await prisma.padre.delete({
       where: {
-        ci: Number(req.params.id),
+        id: Number(req.params.id),
       },
     });
     res.json({

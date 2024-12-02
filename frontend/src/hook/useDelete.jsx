@@ -9,7 +9,7 @@ export const useDelete = (ruta) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${Url + ruta}/${id}/`, {
+      const response = await fetch(`${Url + ruta}/${id}`, {
         method: "DELETE",
       });
 

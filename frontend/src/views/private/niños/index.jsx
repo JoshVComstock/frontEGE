@@ -20,6 +20,7 @@ import {
   ButtonGroup,
   FormContainer,
   FormGroup,
+  FormGroupColumns,
   FormHeader,
   FormTitle,
   Input,
@@ -42,6 +43,7 @@ import { formatFecha } from "../../../utils/formatDate";
 import { usePost } from "../../../hook/usePost";
 import { useUpdate } from "../../../hook/usePut";
 import { useDelete } from "../../../hook/useDelete";
+import { niñosData } from "../../../data/niños";
 const Alumno = () => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,22 +51,20 @@ const Alumno = () => {
   const [currentItem, setCurrentItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  function obtenerFechaActualISO() {
-    return new Date().toISOString();
-  }
-
-  const fechaActual = obtenerFechaActualISO();
+  const [idPadre, setIdPadre] = useState();
   const [form, setForm] = useState({
     nombre: "",
-    correo: "",
-    contraseña: "",
-    rol: "",
-    fecha_registro: fechaActual,
+    apellido: "",
+    certificado: false,
+    ci: "",
+    fechaNaci: "",
+    IdPadre: idPadre,
   });
-  const { data } = useGet("usuario");
-  const { postData } = usePost("usuario");
-  const { updateData } = useUpdate("usuario");
-  const { deleteData } = useDelete("usuario");
+  const { data } = useGet("alumno");
+  const { data: PadreData } = useGet("padre");
+  const { postData } = usePost("alumno");
+  const { updateData } = useUpdate("alumno");
+  const { deleteData } = useDelete("alumno");
 
   useEffect(() => {
     if (data) {
@@ -75,10 +75,11 @@ const Alumno = () => {
     if (currentItem) {
       setForm({
         nombre: currentItem.nombre,
-        correo: currentItem.correo,
-        contraseña: currentItem.contraseña,
-        rol: currentItem.rol,
-        fecha_registro: currentItem.fecha_registro,
+        apellido: currentItem.apellido,
+        certificado: currentItem.certificado,
+        ci: currentItem.ci,
+        fechaNaci: currentItem.fechaNaci,
+        IdPadre: currentItem.idPadre,
       });
     }
   }, [currentItem]);
@@ -93,47 +94,57 @@ const Alumno = () => {
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.autoTable({
-      head: [["ID", "Nombre", "Precio", "Stock"]],
+      head: [
+        [
+          "ID",
+          "Nombre",
+          "Apellido",
+          "Certificado",
+          "Carnet",
+          "Fecha de nacimimiento",
+          "Padre",
+        ],
+      ],
       body: items.map((item) => [
         item.id,
         item.nombre,
-        item.precio,
-        item.stock,
+        item.apellido,
+        item.certificado ? "Tiene" : "No tiene",
+        item.ci,
+        item.fechaNaci,
+        item.padre,
       ]),
     });
-    doc.save("productos.pdf");
+    doc.save("alumno.pdf");
   };
   const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Productos");
-    XLSX.writeFile(wb, "productos.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Alumno");
+    XLSX.writeFile(wb, "alumno.xlsx");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (currentItem) {
-      const updatedUser = await updateData(currentItem.id, form);
-      setItems(
-        items.map((item) => (item.id === updatedUser.id ? updatedUser : item))
-      );
+      await updateData(currentItem.id, form);
     } else {
-      const newUser = await postData(form);
-      setItems([...items, newUser]);
+      console.log(form);
+      await postData(form);
     }
     setIsModalOpen(false);
     setCurrentItem(null);
     setForm({
       nombre: "",
-      correo: "",
-      contraseña: "",
-      rol: "",
-      fecha_registro: fechaActual,
+      apellido: "",
+      certificado: false,
+      ci: "",
+      fechaNaci: "",
+      IdPadre: idPadre,
     });
   };
   const handleDelete = async (id) => {
     await deleteData(id);
-    setItems(items.filter((item) => item.id !== id));
   };
   const filteredItems = data?.data?.filter((item) =>
     item.nombre.toLowerCase().includes(searchTerm.toLowerCase())
@@ -158,28 +169,18 @@ const Alumno = () => {
             <Search size={20} />
             <input
               type="text"
-              placeholder="Buscar usuario..."
+              placeholder="Buscar alumno..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </SearchContainer>
-
           <ButtonGroup>
-            <Button variant="secondary" onClick={exportToPDF}>
-              <FilePen size={20} />
-              PDF
-            </Button>
-            <Button variant="secondary" onClick={exportToExcel}>
-              <FileSpreadsheet size={20} />
-              Excel
-            </Button>
             <Button variant="primary" onClick={() => setIsModalOpen(true)}>
               <Plus size={20} />
               Agregar
             </Button>
           </ButtonGroup>
         </TableHeader>
-
         <Table>
           <thead>
             <tr>
@@ -194,15 +195,15 @@ const Alumno = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredItems?.map((item) => (
+            {niñosData?.map((item) => (
               <tr key={item.id}>
                 <Td>{item.id}</Td>
                 <Td>{item.nombre}</Td>
                 <Td>{item.apellido}</Td>
                 <Td>{item.certificado}</Td>
-                <Th>{item.ci}</Th>
-                <Th>{item.fechaNaci}</Th>
-                <Th>{item.padre}</Th>
+                <Td>{item.carnet}</Td>
+                <Td>{item.fechaNacimiento}</Td>
+                <Td>{item.padre}</Td>
 
                 <Td>
                   <ActionButtons>
@@ -257,7 +258,7 @@ const Alumno = () => {
                 marginBottom: "1.5rem",
               }}
             >
-              <h2>{currentItem ? "Editar usuario" : "Nuevo usuario"}</h2>
+              <h2>{currentItem ? "Editar alumno" : "Nuevo alumno"}</h2>
               <Button
                 type="button"
                 variant="secondary"
@@ -269,59 +270,80 @@ const Alumno = () => {
                 <X size={20} />
               </Button>
             </ButtonGroup>
-
+            <FormGroupColumns>
+              <FormGroup>
+                <Label>Nombre</Label>
+                <Input
+                  type="text"
+                  name="nombre"
+                  value={form.nombre}
+                  onChange={handleChange}
+                  placeholder="Nombre"
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Apellido</Label>
+                <Input
+                  type="text"
+                  name="apellido"
+                  value={form.apellido}
+                  onChange={handleChange}
+                  placeholder="Apellido"
+                  required
+                />
+              </FormGroup>
+            </FormGroupColumns>
             <FormGroup>
-              <Label>Nombre</Label>
-              <Input
-                type="text"
-                name="nombre"
-                value={form.nombre}
-                onChange={handleChange}
-                placeholder="Nombre"
-                required
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Correo</Label>
-              <Input
-                type="email"
-                name="correo"
-                value={form.correo}
-                onChange={handleChange}
-                placeholder="Correo"
-                required
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Contraseña</Label>
-              <Input
-                type="password"
-                name="contraseña"
-                value={form.contraseña}
-                onChange={handleChange}
-                placeholder="Contraseña"
-                required
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Rol</Label>
+              <Label>Padre</Label>
               <InputSelect
-                name="rol"
+                name="IdPadre"
                 onChange={handleChange}
-                value={form.rol}
+                value={form.IdPadre}
                 required
               >
-                <option value="">Seleccionar Rol</option>
-                <option value="dueño">Dueño</option>
-                <option value="chef">Chef</option>
-                <option value="jefe de area">Jefe de área</option>
-                <option value="cocinero">Cocinero</option>
+                <option>Seleccionar padre</option>
+                {PadreData?.data?.map((v, i) => (
+                  <option value={v.id} key={i}>
+                    {v.nombre}
+                  </option>
+                ))}
               </InputSelect>
             </FormGroup>
-
+            <FormGroup>
+              <Label>Certificado</Label>
+              <Input
+                type="checkbox"
+                name="certificado"
+                value={form.certificado}
+                onChange={handleChange}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label>Carnet</Label>
+              <Input
+                type="text"
+                name="ci"
+                value={form.ci}
+                onChange={handleChange}
+                placeholder="Carnet"
+                required
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label>Fecha de nacimiento</Label>
+              <Input
+                type="date"
+                name="fechaNaci"
+                value={form.fechaNaci}
+                onChange={handleChange}
+                placeholder="Fecha de nacimiento"
+                required
+              />
+            </FormGroup>
             <ButtonGroup>
               <Button type="submit" variant="primary">
-                <Save size={20} /> Guardar
+                Guardar
               </Button>
               <Button
                 type="button"
@@ -331,7 +353,7 @@ const Alumno = () => {
                   setCurrentItem(null);
                 }}
               >
-                <X size={20} /> Cancelar
+                Cancelar
               </Button>
             </ButtonGroup>
           </form>

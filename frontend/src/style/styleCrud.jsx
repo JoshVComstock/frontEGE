@@ -14,38 +14,37 @@ export const Button = styled.button`
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 2rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-
+  background: transparent;
   ${(props) =>
     props.variant === "primary" &&
     `
     background: ${PRIMARY_COLOR};
     color: white;
     &:hover {
-      background: #ff4a1f;
+    opacity:0.8;
     }
   `}
 
   ${(props) =>
     props.variant === "secondary" &&
     `
-    background: #f3f4f6;
     color: #374151;
     &:hover {
-      background: #e5e7eb;
+      color:${PRIMARY_COLOR}
     }
   `}
 
   ${(props) =>
     props.variant === "danger" &&
     `
-    background: #fee2e2;
+    
     color: #dc2626;
     &:hover {
-      background: #fecaca;
+        opacity:0.8;
     }
   `}
 `;
@@ -57,7 +56,7 @@ export const ModalOverlay = styled.div`
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  display: ${props => props.isOpen ? 'flex' : 'none'};
+  display: ${(props) => (props.isOpen ? "flex" : "none")};
   justify-content: center;
   align-items: center;
   z-index: 1000;
@@ -119,7 +118,8 @@ export const SearchContainer = styled.div`
 export const ButtonGroup = styled.div`
   display: flex;
   gap: 0.75rem;
-  align-items: center;
+  align-items: end;
+  justify-content: end;
 `;
 
 export const Table = styled.table`
@@ -181,7 +181,11 @@ export const FormTitle = styled.h2`
 export const FormGroup = styled.div`
   margin-bottom: 1.5rem;
 `;
-
+export const FormGroupColumns = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
 export const Label = styled.label`
   display: block;
   margin-bottom: 0.5rem;

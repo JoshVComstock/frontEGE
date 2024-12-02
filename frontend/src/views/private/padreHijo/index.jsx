@@ -38,10 +38,10 @@ import {
   Th,
 } from "../../../style/styleCrud";
 import { useGet } from "../../../hook/useGet";
-import { formatFecha } from "../../../utils/formatDate";
 import { usePost } from "../../../hook/usePost";
 import { useUpdate } from "../../../hook/usePut";
 import { useDelete } from "../../../hook/useDelete";
+import { padreHijo2 } from "../../../data/padreHijo2";
 const PadreHijo = () => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -194,15 +194,15 @@ const PadreHijo = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredItems?.map((item) => (
+            {padreHijo2?.map((item) => (
               <tr key={item.id}>
                 <Td>{item.id}</Td>
                 <Td>{item.nombre}</Td>
                 <Td>{item.apellido}</Td>
-                <Th>{item.ci}</Th>
+                <Th>{item.hijo}</Th>
+                <Th>{item.curso}</Th>
                 <Td>{item.telefono}</Td>
-                <Th>{item.direccion}</Th>
-                <Th>{item.gmail}</Th>
+                <Th>{item.correo}</Th>
                 <Th>{item.password}</Th>
 
                 <Td>

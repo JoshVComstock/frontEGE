@@ -8,7 +8,7 @@ export const usePost = (ruta) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${Url + ruta}/`, {
+      const response = await fetch(`${Url + ruta}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
