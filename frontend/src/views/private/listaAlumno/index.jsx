@@ -9,6 +9,7 @@ import {
   Save,
   X,
   ChevronLeft,
+  CheckCircle,
   ChevronRight,
 } from "lucide-react";
 import * as XLSX from "xlsx";
@@ -91,38 +92,6 @@ const ListaAlumno = () => {
       [name]: value,
     });
   };
-  const exportToPDF = () => {
-    const doc = new jsPDF();
-    doc.autoTable({
-      head: [
-        [
-          "ID",
-          "Nombre",
-          "Apellido",
-          "Certificado",
-          "Carnet",
-          "Fecha de nacimimiento",
-          "Padre",
-        ],
-      ],
-      body: items.map((item) => [
-        item.id,
-        item.nombre,
-        item.apellido,
-        item.certificado ? "Tiene" : "No tiene",
-        item.ci,
-        item.fechaNaci,
-        item.padre,
-      ]),
-    });
-    doc.save("alumno.pdf");
-  };
-  const exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Alumno");
-    XLSX.writeFile(wb, "alumno.xlsx");
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -176,8 +145,7 @@ const ListaAlumno = () => {
           </SearchContainer>
           <ButtonGroup>
             <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-              <Plus size={20} />
-              Agregar
+              Guardar asistencia
             </Button>
           </ButtonGroup>
         </TableHeader>
@@ -214,13 +182,18 @@ const ListaAlumno = () => {
                         setIsFormOpen(true);
                       }}
                     >
-                      <Edit2 size={16} />
+                      Asistio
+                      <Input type="checkbox" />
                     </Button>
                     <Button
-                      variant="danger"
-                      onClick={() => handleDelete(item.id)}
+                      variant="secondary"
+                      onClick={() => {
+                        setCurrentItem(item);
+                        setIsFormOpen(true);
+                      }}
                     >
-                      <Trash2 size={16} />
+                      No vino
+                      <Input type="checkbox" />
                     </Button>
                   </ActionButtons>
                 </Td>
